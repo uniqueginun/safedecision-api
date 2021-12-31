@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class EnsureUserIsAdmin
 {
@@ -17,7 +18,7 @@ class EnsureUserIsAdmin
     public function handle(Request $request, Closure $next)
     {
         if (! $request->user()->isAdmin()) {
-            return response()->json(['message' => 'Unauthorized'], 401);
+            return response()->json(['message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
         }
         
         return $next($request);
