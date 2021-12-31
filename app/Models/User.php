@@ -2,11 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -22,6 +21,8 @@ class User extends Authenticatable
         'email',
         'password',
     ];
+
+    public $appends = ['role'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -42,6 +43,21 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * Get the user's role.
+     *
+     * @return string
+     */
+    public function getRoleAttribute(): string
+    {
+        return $this->isAdmin() ? 'admin' : 'user';
+    }
+
+    /**
+     * Check if the user is an admin.
+     *
+     * @return bool
+     */
     public function isAdmin(): bool
     {
         return !! $this->is_admin;
