@@ -21,6 +21,14 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middlew
 
 
 Route::middleware(['auth:sanctum'])->group(function () {
+
+    Route::prefix('admin')->middleware('admin-user')->namespace('App\Http\Controllers\Admin')->group(function () {
+        Route::get('/', function () {
+            return response()->json(['message' => 'Admin dashboard']);
+        });
+    });
+
+
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
