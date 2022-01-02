@@ -41,7 +41,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return new UserResource($request->user());
     });
 
-    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-        ->middleware('auth')
-        ->name('logout');
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy']);
 });

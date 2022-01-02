@@ -2,8 +2,9 @@
 
 namespace App\Http\Resources;
 
+use Illuminate\Http\Resources\Json\JsonResource;
 
-class CategoryResource extends CategoryIndexResource
+class CategoryIndexResource extends JsonResource
 {
 
     public static $wrap = 'categories';
@@ -16,13 +17,11 @@ class CategoryResource extends CategoryIndexResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request) + [
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'parent_name' => optional($this->parent)->name,
             'slug' => $this->slug,
-            'parent_id' => $this->parent_id,
-            'cpu_id' => $this->cpu_id,
-            'parent' => $this->parent,
-            'children' => CategoryResource::collection($this->children),
-            'products_count' => $this->products_count,
         ];
     }
 }

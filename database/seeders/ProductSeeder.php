@@ -20,54 +20,49 @@ class ProductSeeder extends Seeder
     public function run()
     {
 
-        $admins = User::factory(2)->create([
+        $admin = User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'systemadmin@safedecision.com',
             'is_admin' => true,
         ]);
 
-        User::factory(4)->create();
+        User::factory()->create([
+            'name' => 'User',
+            'email' => 'user@safedecision.com'
+        ]);
 
-        $rootCategories = collect(['Laptops', 'Mobile Phones', 'Headphones'])->map(function ($name) {
+        $rootCategories = collect(['Laptops', 'Mobile Phones', 'Headphones'])->transform(function ($name) {
             return Category::factory()->create([
                 'name' => $name,
                 'slug' => Str::slug($name),
             ]);
         });
 
-        $categories = $rootCategories->map(function ($category) {
-            return Category::factory()->count(2)->create([
-                'parent_id' => $category->id,
-            ]);
-        });
-
-
-        $cpus = collect(['Intel', 'AMD', 'snapdragon', 'exynos'])->map(function ($name) {
+        $cpus = collect(['Intel', 'AMD', 'snapdragon', 'exynos'])->transform(function ($name) {
             return Cpu::factory()->create([
                 'name' => ucfirst($name),
             ]);
         });
 
-        $subCategories = $categories->map(function ($cats) use ($cpus) {
-            return $cats->map(function ($cat) use ($cpus) {
-                return Category::factory(5)->create([
-                    'parent_id' => $cat->id,
-                    'cpu_id' => $cpus->random()->id,
-                ]);
-            });
+        $rootCategories->each(function ($rootCat) use ($cpus) {
+            $rootCat->children()->createMany(
+                Category::factory()->times(3)->make([
+                    'parent_id' => $rootCat->id,
+                    'cpu_id' => $rootCat->id % 2 ? $cpus->random()->id : null,
+                ])->toArray()
+            );
         });
 
-        collect(['Apple', 'Samsung', 'ASUS', 'DELL'])
-        ->map(fn ($name) => Company::factory()->create(['name' => $name]))
-        ->each(function ($company) use ($subCategories, $admins) {
-           $subCategories->each(function ($catItem) use ($company, $admins) {
-               $catItem->each(function ($cat) use ($company, $admins) {
-                   $cat->each(function ($subCat) use ($company, $admins) {
-                       $subCat->products()->saveMany(Product::factory(5)->make([
-                           'company_id' => $company->id,
-                           'created_by' => $admins->random()->id,
-                       ]));
-                   });
-               });
-           });
+        $companies = collect(['Apple', 'Samsung', 'ASUS', 'DELL'])
+        ->map(fn ($name) => Company::factory()->create(['name' => $name]));
+
+        $allCats = Category::whereNotNull('parent_id')->get();
+
+        $allCats->each(function ($subCat) use ($admin, $companies) {
+            $subCat->products()->saveMany(Product::factory(5)->make([
+                'company_id' => $companies->random()->id,
+                'created_by' => $admin->id,
+            ]));
         });
     }
 }

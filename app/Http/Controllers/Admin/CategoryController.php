@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CategoryIndexResource;
 use App\Http\Resources\CategoryResource;
+use App\Http\Resources\CategorySimpleResource;
 
 class CategoryController extends Controller
 {
@@ -16,6 +18,19 @@ class CategoryController extends Controller
      */
     public function index()
     {
+
+        if (request()->has('index')) {
+            return CategoryIndexResource::collection(
+                Category::tree()->paginate(100)
+            );
+        }
+
+        if (request()->has('simple')) {
+            return CategorySimpleResource::collection(
+                Category::tree()->get()->toTree()
+            );
+        }
+
         return CategoryResource::collection(
             Category::tree()->get()->toTree()
         );
@@ -37,6 +52,12 @@ class CategoryController extends Controller
             ])
         );
 
+        $request->collect('children')->each(function ($child) use ($category) {
+            $child = $category->children()->create([
+                'name' => $child['name']
+            ]);
+        });
+
         return new CategoryResource($category);
     }
 
@@ -48,7 +69,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        return new CategoryResource($category);
+        return new CategorySimpleResource($category->load('children'));
     }
 
     /**
@@ -60,6 +81,7 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
+
         $category->update(
             $request->validate([
                 'name' => 'required|string|max:255',
@@ -68,7 +90,20 @@ class CategoryController extends Controller
             ])
         );
 
-        return new CategoryResource($category);
+        $idsList = [];
+
+        $request->collect('children')->each(function ($child) use ($category, &$idsList) {
+            $child = $category->children()->updateOrCreate(
+                ['id' => $child['id']],
+                ['name' => $child['name']]
+            );
+
+            $idsList[] = $child->id;
+        });
+
+        $category->children()->whereNotIn('id', $idsList)->delete();
+
+        return new CategoryResource($category->load('children'));
     }
 
     /**
