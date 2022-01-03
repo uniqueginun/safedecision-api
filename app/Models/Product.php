@@ -20,6 +20,11 @@ class Product extends Model
         'created_by'
     ];
 
+    public function formattedPrice()
+    {
+        return number_format($this->price / 100, 2);
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);
