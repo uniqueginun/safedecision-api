@@ -35,11 +35,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
             'create', 'show', 'edit'
         ));
 
-        // Route::resource('categories', CategoryController::class)->except($crudException);
-        // Route::delete('categories/{product:id}', [CategoryController::class, 'destroy']);
+        Route::resource('categories', CategoryController::class)->except(array(
+            'create', 'show', 'destroy'
+        ));
+        Route::delete('categories/{category:id}', [CategoryController::class, 'destroy']);
 
-        // Route::resource('products', ProductController::class)->except($crudException);
-        // Route::delete('products/{product:id}', [ProductController::class, 'destroy']);
+        Route::resource('products', ProductController::class)->except(array(
+            'create', 'show', 'destroy'
+        ));
+        Route::delete('products/{product:id}', [ProductController::class, 'destroy']);
         
     });
 

@@ -14,4 +14,9 @@ trait Sluggable
            $category->slug = Str::slug($category->name);
        });
    }
+
+   public function getRouteKeyName() 
+   {
+       return 'slug';
+   }
 }

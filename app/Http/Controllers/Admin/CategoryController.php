@@ -52,7 +52,7 @@ class CategoryController extends Controller
             ])
         );
 
-        $request->collect('children')->each(function ($child) use ($category) {
+        $request->collect('children')->filter(fn ($child) => $child['name'] ?? false)->each(function ($child) use ($category) {
             $child = $category->children()->create([
                 'name' => $child['name']
             ]);
@@ -67,7 +67,7 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category)
+    public function edit(Category $category)
     {
         return new CategorySimpleResource($category->load('children'));
     }
@@ -92,7 +92,7 @@ class CategoryController extends Controller
 
         $idsList = [];
 
-        $request->collect('children')->each(function ($child) use ($category, &$idsList) {
+        $request->collect('children')->filter(fn ($child) => $child['name'] ?? false)->each(function ($child) use ($category, &$idsList) {
             $child = $category->children()->updateOrCreate(
                 ['id' => $child['id']],
                 ['name' => $child['name']]
@@ -101,7 +101,9 @@ class CategoryController extends Controller
             $idsList[] = $child->id;
         });
 
-        $category->children()->whereNotIn('id', $idsList)->delete();
+        $category->children()->whereNotIn('id', $idsList)->update([
+            'parent_id' => null
+        ]);
 
         return new CategoryResource($category->load('children'));
     }

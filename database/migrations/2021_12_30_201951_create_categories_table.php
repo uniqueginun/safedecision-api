@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Category;
+use App\Models\Cpu;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,8 +19,8 @@ class CreateCategoriesTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->foreignId('parent_id')->index()->nullable();
-            $table->foreignId('cpu_id')->index()->nullable();
+            $table->foreignIdFor(Cpu::class)->onDelete('cascade')->index()->nullable();
+            $table->foreignIdFor(Category::class, 'parent_id')->onDelete('cascade')->index()->nullable();
             $table->timestamps();
         });
     }

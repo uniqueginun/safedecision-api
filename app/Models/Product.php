@@ -17,7 +17,7 @@ class Product extends Model
         'price',
         'category_id',
         'company_id',
-        'created_by'
+        'user_id'
     ];
 
     public function formattedPrice()

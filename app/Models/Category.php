@@ -18,6 +18,15 @@ class Category extends Model
         'cpu_id'
     ];
 
+    public static function booted()
+    {
+        parent::booted();
+
+        static::deleted(function ($category) {
+            $category->products()->delete();
+        });
+    }
+
     public function products()
     {
         return $this->hasMany(Product::class);

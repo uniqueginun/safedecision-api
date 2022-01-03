@@ -32,7 +32,7 @@ class ProductController extends Controller
         return new ProductResource(
             Product::create(
                 array_merge($request->validated(), [
-                    'created_by' => $request->user()->id,
+                    'user_id' => $request->user()->id,
                 ])
             )
         );
@@ -44,7 +44,7 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function edit(Product $product)
     {
         return new ProductResource(
             $product->load('category', 'company')
