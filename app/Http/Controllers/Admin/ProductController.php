@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductResource;
+use App\Http\Requests\ProductStoreRequest;
 
 class ProductController extends Controller
 {
@@ -24,13 +25,17 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  App\Http\Requests\ProductRequest $request
+     * @param  App\Http\Requests\ProductStoreRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(ProductRequest $request)
+    public function store(ProductStoreRequest $request)
     {
         return new ProductResource(
-            Product::create($request->validated())
+            Product::create(
+                array_merge($request->validated(), [
+                    'created_by' => $request->user()->id,
+                ])
+            )
         );
     }
 
