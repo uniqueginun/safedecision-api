@@ -30,9 +30,14 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('admin')->middleware('admin-user')->group(function () {
         
         Route::get('/dashboard', [DashboardController::class, 'index']);
-        Route::resource('companies', CompanyController::class);
-        Route::resource('categories', CategoryController::class);
-        Route::resource('products', ProductController::class);
+
+        $crudException = ['create'];
+        
+        Route::resource('companies', CompanyController::class)->except($crudException);
+        Route::resource('categories', CategoryController::class)->except($crudException);
+
+        Route::resource('products', ProductController::class)->except($crudException + ['show']);
+        Route::get('products/{product:slug}', [ProductController::class, 'show']);
         
     });
 

@@ -35,10 +35,10 @@ class Product extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function getRouteKeyName()
-    {
-        return 'slug';
-    }
+    // public function getRouteKeyName()
+    // {
+    //     return 'slug';
+    // }
 
     public function getPriceAttribute($value)
     {
