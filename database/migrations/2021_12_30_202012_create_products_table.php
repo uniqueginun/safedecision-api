@@ -20,7 +20,7 @@ class CreateProductsTable extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->integer('price');
+            $table->unsignedBigInteger('price');
             $table->foreignIdFor(Company::class)->index();
             $table->foreignIdFor(Category::class)->index();
             $table->foreignId('created_by')->references('id')->on('users')->index();

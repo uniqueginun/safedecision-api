@@ -22,7 +22,7 @@ class Product extends Model
 
     public function formattedPrice()
     {
-        return number_format($this->price / 100, 2);
+        return 'SAR ' . number_format($this->price, 2);
     }
 
     public function category()

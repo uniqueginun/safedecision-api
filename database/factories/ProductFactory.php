@@ -22,7 +22,7 @@ class ProductFactory extends Factory
             'name' => $name,
             'slug' => Str::slug($name),
             'description' => $this->faker->text,
-            'price' => $this->faker->randomNumber(4),
+            'price' => $this->faker->randomNumber(4, true),
             'company_id' => Company::factory(),
             'category_id' => Category::factory(),
         ];
