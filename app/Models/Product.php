@@ -34,14 +34,4 @@ class Product extends Model
     {
         return $this->belongsTo(Company::class);
     }
-
-    // public function getRouteKeyName()
-    // {
-    //     return 'slug';
-    // }
-
-    public function getPriceAttribute($value)
-    {
-        return $value / 100;
-    }
 }
