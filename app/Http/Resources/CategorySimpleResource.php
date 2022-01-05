@@ -19,6 +19,7 @@ class CategorySimpleResource extends JsonResource
             'label' => $this->name,
             'parent_id' => $this->parent_id,
             'slug' => $this->slug,
+            'products_count' => $this->products_count,
             'children' => CategorySimpleResource::collection($this->whenLoaded('children')),
         ];
     }

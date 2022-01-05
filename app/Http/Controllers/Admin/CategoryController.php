@@ -27,7 +27,7 @@ class CategoryController extends Controller
 
         if (request()->has('simple')) {
             return CategorySimpleResource::collection(
-                Category::tree()->get()->toTree()
+                Category::tree()->withCount('products')->get()->toTree()
             );
         }
 

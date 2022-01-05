@@ -4,6 +4,7 @@ namespace App\Filters\ProductFilters;
 
 use Closure;
 use App\Filters\Filter;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Builder;
 
 class CategoryFilter implements Filter
@@ -12,10 +13,15 @@ class CategoryFilter implements Filter
    {
       $condition = request('category') ?? false;
 
-      $builder->when($condition, function (Builder $q, $cats) {
-         $q->whereRelation('category', function (Builder $catQuery) use ($cats) {
-            $catQuery->whereRelation('descendantsAndSelf', fn (Builder $q) => $q->whereIn('id', $cats)); 
-         });
+      $builder->when($condition, function (Builder $query, $cats) {
+         $query->whereHas('category', function ($sql) use ($cats) {
+            
+            $categories = Category::with('descendants')->where('id', $cats)->get()->transform(function ($category) use ($cats) {
+               return $category->descendantsAndSelf()->pluck('id');
+           })->flatten();
+
+            $sql->whereIn('categories.id', $categories->toArray());
+        })->get();
       });
 
       return $next($builder);
