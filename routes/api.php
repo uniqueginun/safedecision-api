@@ -28,9 +28,7 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middlew
 Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::prefix('admin')->middleware('admin-user')->group(function () {
-        
-        Route::get('/dashboard', [DashboardController::class, 'index']);
-        
+                
         Route::resource('companies', CompanyController::class)->except(array(
             'create', 'show', 'edit'
         ));
