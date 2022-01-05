@@ -44,10 +44,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
             'create', 'show', 'destroy'
         ));
         Route::delete('products/{product:id}', [ProductController::class, 'destroy']);
-
-        Route::get('/productsList', ProductIndexController::class);
         
     });
+
+    Route::get('/productsList', ProductIndexController::class);
+    Route::get('/companies', [CompanyController::class, 'index']);
+    Route::get('/categories', [CategoryController::class, 'index']);
 
 
     Route::get('/user', function (Request $request) {
